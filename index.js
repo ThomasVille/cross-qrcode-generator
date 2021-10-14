@@ -65,6 +65,7 @@ function processCSVFile(file) {
     };
     reader.readAsBinaryString(file);
 }
+
 function dropHandler(ev) {
     console.log('File(s) dropped');
 
@@ -86,9 +87,20 @@ function dropHandler(ev) {
         }
     }
 }
+
 function dragOverHandler(ev) {
     console.log('File(s) in drop zone');
 
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
+}
+
+function onDropZoneClick() {
+    document.getElementById('file_input').click();
+}
+
+function fileUploadHandler(event) {
+    for (let i = 0; i < event.target.files.length; i++) {
+        processCSVFile(event.target.files[i]);
+    }
 }

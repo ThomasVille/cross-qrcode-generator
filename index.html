@@ -50,15 +50,16 @@
     }
 
     @media print {
-        .noPrint{
-            display:none;
+        .noPrint {
+            display: none;
         }
     }
 </style>
 </head>
 <body>
-    <div id="drop_zone" class="noPrint" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
-        <p id="drop_zone_text">Glisse ton fichier CSV ici</p>
+    <input id="file_input" type='file' hidden onchange="fileUploadHandler(event);"/>
+    <div id="drop_zone" class="noPrint" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" onclick="onDropZoneClick(event);">
+        <p id="drop_zone_text">Pose ton fichier CSV ici</p>
     </div>
     <div id="print_zone"></div>
     <script type="text/javascript" src="index.js"></script>
