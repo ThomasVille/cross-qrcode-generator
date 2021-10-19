@@ -24,46 +24,76 @@ function splitNames(fullname) {
     return [lastname, firstname];
 }
 
-function processCSVFile(file) {
+function readCSVFile(file) {
     console.log(file);
-    let content = document.getElementById('print_zone');
-    let drop_zone = document.getElementById("drop_zone");
     let drop_zone_text = document.getElementById("drop_zone_text");
     drop_zone_text.innerText = "Génération des dossards en cours...";
 
     let reader = new FileReader();
     reader.onload = function(event) {
         cleanPrintZone();
-        let decoded_file = decode(reader.result);
-        let lines = decoded_file.split(/\r\n?/).slice(1);
 
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i];
+        decoded_file = reader.result;
 
-            let lineDiv = document.createElement('div');
-            lineDiv.className = "qrCodeLine";
-
-            if (i%2 == 1)
-                lineDiv.className += " pageBreak";
-
-            let qrCodeDiv = document.createElement('div');
-            qrCodeDiv.className = "qrCodeCell";
-            textToCode(line, qrCodeDiv);
-
-            let textDiv = document.createElement('div');
-            let cells = line.split('\t');
-            let names = splitNames(cells[0]);
-            textDiv.innerHTML = names[0] + "</br>" + names[1] + "</br>" + cells[1];
-            textDiv.className = "qrCodeCell nameCell";
-
-            lineDiv.appendChild(qrCodeDiv);
-            lineDiv.appendChild(textDiv);
-            content.appendChild(lineDiv);
+        if (decoded_file.indexOf('�') != -1) {
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                let decoded_file = decode(reader.result, {
+                    mode: 'fatal'
+                  });
+                processCSVFile(decoded_file);
+            };
+            reader.readAsBinaryString(file);
+        } else {
+            processCSVFile(decoded_file);
         }
 
-        drop_zone.remove();
     };
-    reader.readAsBinaryString(file);
+    reader.readAsText(file);
+}
+
+function processCSVFile(decoded_file) {
+    let content = document.getElementById('print_zone');
+    let drop_zone = document.getElementById("drop_zone");
+
+    let lines = decoded_file.split(/\r\n?/).slice(1);
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        if (line.length == 0)
+            continue;
+
+        if (line[0] == "\"") {
+            line = line.replaceAll("\"", "");
+            var cells = line.split(';');
+        } else if (line.indexOf(";") != -1) {
+            var cells = line.split(';');
+        } else {
+            var cells = line.split('\t');
+        }
+
+        let lineDiv = document.createElement('div');
+        lineDiv.className = "qrCodeLine";
+
+        if (i%2 == 1)
+            lineDiv.className += " pageBreak";
+
+        let qrCodeDiv = document.createElement('div');
+        qrCodeDiv.className = "qrCodeCell";
+        textToCode(cells.join(';'), qrCodeDiv);
+
+        let textDiv = document.createElement('div');
+
+        let names = splitNames(cells[0]);
+        textDiv.innerHTML = names[0] + "</br>" + names[1] + "</br>" + cells[1];
+        textDiv.className = "qrCodeCell nameCell";
+
+        lineDiv.appendChild(qrCodeDiv);
+        lineDiv.appendChild(textDiv);
+        content.appendChild(lineDiv);
+    }
+
+    drop_zone.remove();
 }
 
 function dropHandler(ev) {
@@ -77,13 +107,13 @@ function dropHandler(ev) {
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
             // If dropped items aren't files, reject them
             if (ev.dataTransfer.items[i].kind === 'file') {
-                processCSVFile(ev.dataTransfer.items[i].getAsFile());
+                readCSVFile(ev.dataTransfer.items[i].getAsFile());
             }
         }
     } else {
         // Use DataTransfer interface to access the file(s)
         for (let i = 0; i < ev.dataTransfer.files.length; i++) {
-            processCSVFile(ev.dataTransfer.files[i]);
+            readCSVFile(ev.dataTransfer.files[i]);
         }
     }
 }
@@ -101,6 +131,6 @@ function onDropZoneClick() {
 
 function fileUploadHandler(event) {
     for (let i = 0; i < event.target.files.length; i++) {
-        processCSVFile(event.target.files[i]);
+        readCSVFile(event.target.files[i]);
     }
 }
