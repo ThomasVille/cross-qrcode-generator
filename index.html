@@ -1,67 +1,120 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="EN" lang="EN">
-<head>
-<title>Générateur de dossards QR Code</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-<script type="text/javascript" src="qrcode.js"></script>
-<script type="text/javascript" src="macintosh.mjs"></script>
-<style>
-    body {
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    #drop_zone {
-        font-size: xxx-large;
-        border: 5px solid blue;
-        text-align: center;
-        box-sizing: content-box;
-        position: fixed;
-        top: 0px;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <title>Générateur de dossards QR Code</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <script type="text/javascript" src="qrcode.js"></script>
+    <script type="text/javascript" src="macintosh.mjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
-    .qrCodeLine {
-        font-size: xx-large;
-        display: flex;
-        flex-direction: row;
-        width: 100vw;
-        height: 50vh;
-        justify-content: space-around;
-        align-items: center;
-    }
-
-    .qrCodeCell {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    .nameCell {
-        justify-content: flex-start;
-    }
-
-    .pageBreak {
-        break-after: page;
-    }
-
-    @media print {
-        .noPrint {
-            display: none;
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: "Raleway", sans-serif
         }
-    }
-</style>
-</head>
-<body>
-    <input id="file_input" type='file' hidden onchange="fileUploadHandler(event);"/>
-    <div id="drop_zone" class="noPrint" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" onclick="onDropZoneClick(event);">
-        <p id="drop_zone_text">Pose ton fichier CSV ici</p>
-    </div>
-    <div id="print_zone"></div>
-    <script type="text/javascript" src="index.js"></script>
+    </style>
 
-</body>
+    <body class="w3-light-grey">
+
+        <!-- w3-content defines a container for fixed size centered content,
+    and is wrapped around the whole page content, except for the footer in this example -->
+        <div class="w3-content" style="max-width:1400px">
+
+            <!-- Header -->
+            <header class="w3-container w3-center w3-padding-32">
+                <h1><b>Générateur de dossards QR Code</b></h1>
+            </header>
+
+            <!-- Grid -->
+            <div class="w3-row">
+                <div id="print_zone" hidden></div>
+
+                <!-- Blog entries -->
+                <div class="w3-col l8 s12">
+                    <!-- Blog entry -->
+                    <div class="w3-card-4 w3-margin w3-white">
+                        <div class="w3-container">
+                            <h3><b>1. Importer des élèves</b></h3>
+                            Cliquez sur le bouton ci-dessous pour importer une liste d'élèves.
+                            <div class="w3-row">
+                                <div class="w3-col m6 l4 s12">
+                                    <input id="file_input" type='file' hidden onchange="fileUploadHandler(event);" />
+                                    <p><button class="w3-button w3-padding-large w3-white w3-border"
+                                            ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"
+                                            onclick="onDropZoneClick(event);">
+                                            <b id="drop_zone_text">Importer une liste d'élèves</b>
+                                        </button></p>
+                                </div>
+                                <div class="w3-col m6 l4 s12">
+                                    <h6><input id="has_header" class="w3-check" type="checkbox" checked
+                                            onchange="hasHeaderChanged()"> La première ligne est un en-tête</h6>
+                                </div>
+                            </div>
+
+                            <h3><b>2. Vérifier le format des données</b></h3>
+
+                            Dans un fichier CSV, la liste des élèves peut être organisée de différentes façons.
+
+                            Modifiez les paramètres ci-dessus jusqu'à ce que les informations correspondent au premier élève
+                            de la liste :
+                            <ul>
+                                <li>Nom : <b id="sample_name"></b></li>
+                                <li>Classe : <b id="sample_class"></b></li>
+                                <li>Genre : <b id="sample_gender"></b></li>
+                                <li>Date de naissance : <b id="sample_birthdate"></b></li>
+                            </ul>
+
+                            <div id="section3">
+                                <div class="w3-padding-16">
+                                    <button id="save_pdf_button" class="w3-button w3-padding-large w3-white w3-border"
+                                        onclick="savePDF();" disabled>
+                                        <b>Enregistrer les dossards</b>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!-- END BLOG ENTRIES -->
+                </div>
+
+                <!-- Introduction menu -->
+                <div class="w3-col l4">
+                    <!-- About Card -->
+                    <div class="w3-card w3-margin w3-margin-top">
+                        <div class="w3-container w3-white">
+                            <h3><b>Cross Scanner</b></h3>
+                            <p>Ce site web permet de transformer une liste d'élèves au format CSV en fichier PDF contenant 2
+                                dossards par page.</p>
+                            <p>Chaque dossard contient un QR Code, le nom, le prénom et la classe de l'élève.</p>
+                            <p>Les QR Codes peuvent être scannés par une application de chronométrage comme Cross Scanner.
+                            </p>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <!-- END Introduction Menu -->
+                </div>
+
+                <!-- END GRID -->
+            </div><br>
+
+            <!-- END w3-content -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+            <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+        </footer>
+        <script type="text/javascript" src="index.js"></script>
+
+    </body>
+
+</html>
