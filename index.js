@@ -1,5 +1,12 @@
 let last_decoded_file;
 let last_generated_pdf;
+let columns = {
+    "firstname": 1,
+    "lastname": 0,
+    "class": 5,
+    "birthdate": 3,
+    "gender": 2,
+};
 
 function textToCode(text) {
     let htmlElement = document.createElement('div');
@@ -22,10 +29,12 @@ function textToPDF(lines) {
     const QUARTER_HEIGHT = 297/4;
     const HALF_WIDTH = 210/2;
 
-
     for (let i = 0; i < lines.length; i++) {
-        let [name, class_str] = lines[i];
-        let [lastname, firstname] = splitNames(name);
+        let class_str = lines[i][columns.class];
+        let firstname = lines[i][columns.firstname];
+        let lastname = lines[i][columns.lastname];
+        let birthdate = lines[i][columns.birthdate];
+        let gender = lines[i][columns.gender];
 
         doc.setFontSize(30);
         let splitLastName = doc.splitTextToSize(lastname, 210 - (HALF_WIDTH + 20) - 10);
@@ -34,7 +43,7 @@ function textToPDF(lines) {
         doc.text(firstname, HALF_WIDTH + 20, QUARTER_HEIGHT + HALF_HEIGHT * (i%2));
         doc.text(class_str, HALF_WIDTH + 20, QUARTER_HEIGHT + 15 + HALF_HEIGHT * (i%2));
 
-        let qr_code_canvas = textToCode(lines[i].join(";"));
+        let qr_code_canvas = textToCode(`${lastname} ${firstname};${class_str};${birthdate};${gender}`);
 
         doc.addImage(qr_code_canvas, 'JPEG', 20, QUARTER_HEIGHT - 35 + HALF_HEIGHT * (i%2), 70, 70, '', 'MEDIUM', 0);
 
@@ -44,8 +53,9 @@ function textToPDF(lines) {
     last_generated_pdf = doc;
 }
 
-function setSampleData(name, class_str, birthdate, gender) {
-    document.getElementById("sample_name").innerText = name;
+function setSampleData(firstname, lastname, class_str, birthdate, gender) {
+    document.getElementById("sample_firstname").innerText = firstname;
+    document.getElementById("sample_lastname").innerText = lastname;
     document.getElementById("sample_class").innerText = class_str;
     document.getElementById("sample_birthdate").innerText = birthdate;
     document.getElementById("sample_gender").innerText = gender;
@@ -123,10 +133,11 @@ function processCSVFile(decoded_file) {
         lines = lines.slice(1);
     }
 
-    let cells = lines.filter(l => l.length).map(l => l.replaceAll("\"", "").split(separator).splice(0, 4));
+    const max_cell_index = Math.max(...Object.values(columns));
+    let cells = lines.filter(l => l.length).map(l => l.replaceAll("\"", "").split(separator).splice(0, max_cell_index+1));
 
     if (cells.length > 0) {
-        setSampleData(cells[0][0], cells[0][1], cells[0][2], cells[0][3]);
+        setSampleData(cells[0][columns.firstname], cells[0][columns.lastname], cells[0][columns.class], cells[0][columns.birthdate], cells[0][columns.gender]);
     }
 
     textToPDF(cells);
