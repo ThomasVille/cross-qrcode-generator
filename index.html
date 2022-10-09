@@ -59,55 +59,73 @@
 
                             Modifiez les paramètres ci-dessous jusqu'à ce que les informations correspondent au premier élève
                             de la liste :
-                            <h6><input id="has_header" class="w3-check" type="checkbox" checked
-                                onchange="hasHeaderChanged()"> La première ligne est un en-tête</h6>
-                            <table class="w3-table-all">
-                                <tr>
-                                    <th>Information</th>
-                                    <th>Colonne</th>
-                                    <th>Exemple</th>
-                                </tr>
-                                <tr>
-                                    <td>Nom</td>
-                                    <td>
-                                        <select id="lastname-select" onChange="hasSelectChanged('lastname', this.selectedIndex)">
-                                        </select>
-                                    </td>
-                                    <td><b id="sample_lastname"></b></td>
-                                </tr>
-                                <tr>
-                                    <td>Prénom</td>
-                                    <td>
-                                        <select id="firstname-select" onChange="hasSelectChanged('firstname', this.selectedIndex)">
-                                        </select>
-                                    </td>
-                                    <td><b id="sample_firstname"></b></td>
-                                </tr>
-                                <tr>
-                                    <td>Classe</td>
-                                    <td>
-                                        <select id="class-select" onChange="hasSelectChanged('class', this.selectedIndex)">
-                                        </select>
-                                    </td>
-                                    <td><b id="sample_class"></b></td>
-                                </tr>
-                                <tr>
-                                    <td>Genre</td>
-                                    <td>
-                                        <select id="gender-select" onChange="hasSelectChanged('gender', this.selectedIndex)">
-                                        </select>
-                                    </td>
-                                    <td><b id="sample_gender"></b></td>
-                                </tr>
-                                <tr>
-                                    <td>Date de naissance</td>
-                                    <td>
-                                        <select id="birthdate-select" onChange="hasSelectChanged('birthdate', this.selectedIndex)">
-                                        </select>
-                                    </td>
-                                    <td><b id="sample_birthdate"></b></td>
-                                </tr>
-                            </table>
+
+                            <div class="w3-panel">
+                                <h6>
+                                    <input id="has_header" class="w3-check" type="checkbox" checked
+                                    onchange="hasHeaderChanged()"> La première ligne est un en-tête
+                                </h6>
+                            </div>
+
+                            <div class="w3-panel">
+                                <table class="w3-table-all">
+                                    <tr>
+                                        <th>Information</th>
+                                        <th>Colonne</th>
+                                        <th>Exemple</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Nom</td>
+                                        <td>
+                                            <select id="lastname-select" onChange="hasSelectChanged('lastname', this.selectedIndex)">
+                                            </select>
+                                        </td>
+                                        <td><b id="sample_lastname"></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Prénom</td>
+                                        <td>
+                                            <select id="firstname-select" onChange="hasSelectChanged('firstname', this.selectedIndex)">
+                                            </select>
+                                        </td>
+                                        <td><b id="sample_firstname"></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Classe</td>
+                                        <td>
+                                            <select id="class-select" onChange="hasSelectChanged('class', this.selectedIndex)">
+                                            </select>
+                                        </td>
+                                        <td><b id="sample_class"></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Genre</td>
+                                        <td>
+                                            <select id="gender-select" onChange="hasSelectChanged('gender', this.selectedIndex)">
+                                            </select>
+                                        </td>
+                                        <td><b id="sample_gender"></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date de naissance</td>
+                                        <td>
+                                            <select id="birthdate-select" onChange="hasSelectChanged('birthdate', this.selectedIndex)">
+                                            </select>
+                                        </td>
+                                        <td><b id="sample_birthdate"></b></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="w3-panel">
+                                Si certains noms/prénoms contiennent des caractères étranges ou inattendus sur les dossards,
+                                essayez de changer l'encodage du fichier :
+                                <select id="encoding-select" onChange="hasEncodingSelectChanged()">
+                                    <option value="utf8">UTF-8</option>
+                                    <option value="cp1251">Windows-1251</option>
+                                    <option value="ISO-8859-1">ISO-8859-1</option>
+                                </select>
+                            </div>
 
                             <div id="section3">
                                 <div class="w3-padding-16">

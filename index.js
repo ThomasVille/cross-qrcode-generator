@@ -1,4 +1,5 @@
 let last_decoded_file;
+let last_file;
 let last_generated_pdf;
 let columns;
 let cells;
@@ -87,9 +88,16 @@ function splitNames(fullname) {
 }
 
 function readCSVFile(file) {
+    if (!file) {
+        return;
+    }
+
     console.log(file);
+    last_file = file;
     let drop_zone_text = document.getElementById("drop_zone_text");
     let save_pdf_button = document.getElementById("save_pdf_button");
+    let encoding_select = document.getElementById("encoding-select");
+
     drop_zone_text.innerText = "Génération des dossards en cours...";
 
     let reader = new FileReader();
@@ -97,6 +105,7 @@ function readCSVFile(file) {
         decoded_file = reader.result;
 
         if (decoded_file.indexOf('�') != -1) {
+            console.log('Invalid characters found, trying to decode macintosh encoding');
             let reader = new FileReader();
             reader.onload = function(event) {
                 let decoded_file = decode(reader.result, {
@@ -109,6 +118,7 @@ function readCSVFile(file) {
             };
             reader.readAsBinaryString(file);
         } else {
+            console.log('No invalid characters found, continuing with ' + encoding_select.value);
             last_decoded_file = decoded_file;
             processCSVFile(decoded_file);
             drop_zone_text.innerText = "Importer une nouvelle liste";
@@ -116,7 +126,7 @@ function readCSVFile(file) {
         }
     };
 
-    reader.readAsText(file);
+    reader.readAsText(file, encoding_select.value);
 }
 
 function detectSeparator(str) {
@@ -230,6 +240,10 @@ function hasHeaderChanged() {
 function hasSelectChanged(column_id, column_index) {
     columns[column_id] = column_index;
     processCSVFile(last_decoded_file);
+}
+
+function hasEncodingSelectChanged() {
+    readCSVFile(last_file);
 }
 
 function savePDF() {
