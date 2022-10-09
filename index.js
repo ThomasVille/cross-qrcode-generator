@@ -1,12 +1,25 @@
 let last_decoded_file;
 let last_generated_pdf;
-let columns = {
-    "firstname": 1,
-    "lastname": 0,
-    "class": 5,
-    "birthdate": 3,
-    "gender": 2,
-};
+let columns;
+let cells;
+
+function resetUIAndVariables() {
+    document.getElementById("lastname-select").innerHTML = '';
+    document.getElementById("firstname-select").innerHTML = '';
+    document.getElementById("class-select").innerHTML = '';
+    document.getElementById("gender-select").innerHTML = '';
+    document.getElementById("birthdate-select").innerHTML = '';
+
+    columns = {
+        "firstname": 0,
+        "lastname": 0,
+        "class": 0,
+        "birthdate": 0,
+        "gender": 0,
+    };
+
+    cells = undefined;
+}
 
 function textToCode(text) {
     let htmlElement = document.createElement('div');
@@ -123,24 +136,48 @@ function detectSeparator(str) {
     return best_separator;
 }
 
+function generateDefaultColumnSelector(first_line, has_header) {
+    let options;
+
+    if (has_header) {
+        // Build the options directly from the header.
+        options = first_line.map(h => `<option value="${h}">${h}</option>`).join();
+    } else {
+        // Generate the options from the number of columns.
+        let fake_header = Array(first_line.length).fill(0).map((x, i) => `Colonne ${i+1}`);
+        options = fake_header.map(h => `<option value="${h}">${h}</option>`).join();
+    }
+
+    document.getElementById("lastname-select").innerHTML = options;
+    document.getElementById("firstname-select").innerHTML = options;
+    document.getElementById("class-select").innerHTML = options;
+    document.getElementById("gender-select").innerHTML = options;
+    document.getElementById("birthdate-select").innerHTML = options;
+}
+
 function processCSVFile(decoded_file) {
+    if (!decoded_file) {
+        return;
+    }
     let has_header = document.getElementById("has_header").checked;
+    let first_line = undefined;
 
     let separator = detectSeparator(decoded_file);
     let lines = decoded_file.split(/\r\n?/);
 
+    cells = lines.filter(l => l.length).map(l => l.replaceAll("\"", "").split(separator));
+    first_line = cells[0];
+
     if (has_header) {
-        lines = lines.slice(1);
+        cells = cells.slice(1);
     }
 
-    const max_cell_index = Math.max(...Object.values(columns));
-    let cells = lines.filter(l => l.length).map(l => l.replaceAll("\"", "").split(separator).splice(0, max_cell_index+1));
-
+    if (!document.getElementById("lastname-select").childElementCount) {
+        generateDefaultColumnSelector(first_line, has_header);
+    }
     if (cells.length > 0) {
         setSampleData(cells[0][columns.firstname], cells[0][columns.lastname], cells[0][columns.class], cells[0][columns.birthdate], cells[0][columns.gender]);
     }
-
-    textToPDF(cells);
 }
 
 function dropHandler(ev) {
@@ -148,6 +185,8 @@ function dropHandler(ev) {
 
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
+
+    resetUIAndVariables();
 
     if (ev.dataTransfer.items) {
         // Use DataTransferItemList interface to access the file(s)
@@ -177,17 +216,25 @@ function onDropZoneClick() {
 }
 
 function fileUploadHandler(event) {
+    resetUIAndVariables();
     for (let i = 0; i < event.target.files.length; i++) {
         readCSVFile(event.target.files[i]);
     }
 }
 
 function hasHeaderChanged() {
+    resetUIAndVariables();
+    processCSVFile(last_decoded_file);
+}
+
+function hasSelectChanged(column_id, column_index) {
+    columns[column_id] = column_index;
     processCSVFile(last_decoded_file);
 }
 
 function savePDF() {
-    if (last_generated_pdf) {
+    if (cells) {
+        textToPDF(cells);
         last_generated_pdf.save("Dossards.pdf");
     }
 }

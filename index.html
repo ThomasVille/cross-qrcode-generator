@@ -51,25 +51,63 @@
                                             <b id="drop_zone_text">Importer une liste d'élèves</b>
                                         </button></p>
                                 </div>
-                                <div class="w3-col m6 l4 s12">
-                                    <h6><input id="has_header" class="w3-check" type="checkbox" checked
-                                            onchange="hasHeaderChanged()"> La première ligne est un en-tête</h6>
-                                </div>
                             </div>
 
                             <h3><b>2. Vérifier le format des données</b></h3>
 
                             Dans un fichier CSV, la liste des élèves peut être organisée de différentes façons.
 
-                            Modifiez les paramètres ci-dessus jusqu'à ce que les informations correspondent au premier élève
+                            Modifiez les paramètres ci-dessous jusqu'à ce que les informations correspondent au premier élève
                             de la liste :
-                            <ul>
-                                <li>Nom : <b id="sample_lastname"></b></li>
-                                <li>Prénom : <b id="sample_firstname"></b></li>
-                                <li>Classe : <b id="sample_class"></b></li>
-                                <li>Genre : <b id="sample_gender"></b></li>
-                                <li>Date de naissance : <b id="sample_birthdate"></b></li>
-                            </ul>
+                            <h6><input id="has_header" class="w3-check" type="checkbox" checked
+                                onchange="hasHeaderChanged()"> La première ligne est un en-tête</h6>
+                            <table class="w3-table-all">
+                                <tr>
+                                    <th>Information</th>
+                                    <th>Colonne</th>
+                                    <th>Exemple</th>
+                                </tr>
+                                <tr>
+                                    <td>Nom</td>
+                                    <td>
+                                        <select id="lastname-select" onChange="hasSelectChanged('lastname', this.selectedIndex)">
+                                        </select>
+                                    </td>
+                                    <td><b id="sample_lastname"></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Prénom</td>
+                                    <td>
+                                        <select id="firstname-select" onChange="hasSelectChanged('firstname', this.selectedIndex)">
+                                        </select>
+                                    </td>
+                                    <td><b id="sample_firstname"></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Classe</td>
+                                    <td>
+                                        <select id="class-select" onChange="hasSelectChanged('class', this.selectedIndex)">
+                                        </select>
+                                    </td>
+                                    <td><b id="sample_class"></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Genre</td>
+                                    <td>
+                                        <select id="gender-select" onChange="hasSelectChanged('gender', this.selectedIndex)">
+                                        </select>
+                                    </td>
+                                    <td><b id="sample_gender"></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Date de naissance</td>
+                                    <td>
+                                        <select id="birthdate-select" onChange="hasSelectChanged('birthdate', this.selectedIndex)">
+                                        </select>
+                                    </td>
+                                    <td><b id="sample_birthdate"></b></td>
+                                </tr>
+                            </table>
 
                             <div id="section3">
                                 <div class="w3-padding-16">
